@@ -3,164 +3,151 @@ var fs = require("fs");
 var Service, Characteristic;
 
 module.exports = function(homebridge) {
-  Service = homebridge.hap.Service;
-  Characteristic = homebridge.hap.Characteristic;
+    Service = homebridge.hap.Service;
+    Characteristic = homebridge.hap.Characteristic;
 
-  homebridge.registerAccessory("homebridge-httplock", "Httplock", LockAccessory);
+    homebridge.registerAccessory("homebridge-esplock", "Esplock", LockAccessory);
 }
 
 function LockAccessory(log, config) {
-  this.log = log;
-  this.name = config["name"];
-  this.url = config["url"];
-  this.lockID = config["lock-id"];
-  this.rootCACert = config["ssl-root-ca-cert"];
-  this.username = config["username"];
-  this.password = config["password"];
-  
-  this.lockservice = new Service.LockMechanism(this.name);
-  
-  this.lockservice
-    .getCharacteristic(Characteristic.LockCurrentState)
-    .on('get', this.getState.bind(this));
-  
-  this.lockservice
-    .getCharacteristic(Characteristic.LockTargetState)
-    .on('get', this.getState.bind(this))
-    .on('set', this.setState.bind(this));
-	
-  this.battservice = new Service.BatteryService(this.name);
-  
-  this.battservice
-    .getCharacteristic(Characteristic.BatteryLevel)
-    .on('get', this.getBattery.bind(this));
+    this.log = log;
+    this.name = config["name"];
+    this.url = config["url"];
+    this.lockID = config["lock-id"];
+    this.username = config["username"];
+    this.password = config["password"];
 
-  this.battservice
-    .getCharacteristic(Characteristic.ChargingState)
-    .on('get', this.getCharging.bind(this));
+    this.lockservice = new Service.LockMechanism(this.name);
 
-  this.battservice
-    .getCharacteristic(Characteristic.StatusLowBattery)
-    .on('get', this.getLowBatt.bind(this));
+    this.lockservice
+        .getCharacteristic(Characteristic.LockCurrentState)
+        .on('get', this.getState.bind(this));
+
+    this.lockservice
+        .getCharacteristic(Characteristic.LockTargetState)
+        .on('get', this.getState.bind(this))
+        .on('set', this.setState.bind(this));
+
+    this.battservice = new Service.BatteryService(this.name);
+
+    this.battservice
+        .getCharacteristic(Characteristic.BatteryLevel)
+        .on('get', this.getBattery.bind(this));
+
+    this.battservice
+        .getCharacteristic(Characteristic.ChargingState)
+        .on('get', this.getCharging.bind(this));
+
+    this.battservice
+        .getCharacteristic(Characteristic.StatusLowBattery)
+        .on('get', this.getLowBatt.bind(this));
 
 }
 
 LockAccessory.prototype.getState = function(callback) {
-  this.log("Getting current state...");
-  
-  request.get({
-	agentOptions: {
-      ca: fs.readFileSync(this.rootCACert)
-    },
-    url: this.url,
-    qs: { username: this.username, password: this.password, lockid: this.lockID }
-  }, function(err, response, body) {
-    
-    if (!err && response.statusCode == 200) {
-      var json = JSON.parse(body);
-      var state = json.state; // "locked" or "unlocked"
-      this.log("Lock state is %s", state);
-      var locked = state == "locked"
-      callback(null, locked); // success
-    }
-    else {
-      this.log("Error getting state (status code %s): %s", response.statusCode, err);
-      callback(err);
-    }
-  }.bind(this));
+    this.log("Getting current state...");
+
+    request.get({
+        url: this.url,
+        qs: { username: this.username, password: this.password, lockid: this.lockID }
+    }, function(err, response, body) {
+
+        if (!err && response.statusCode == 200) {
+            var json = JSON.parse(body);
+            var state = json.state; // "locked" or "unlocked"
+            this.log("Lock state is %s", state);
+            var locked = state == "locked"
+                callback(null, locked); // success
+        }
+        else {
+            this.log("Error getting state (status code %s): %s", response.statusCode, err);
+            callback(err);
+        }
+    }.bind(this));
 }
 
 LockAccessory.prototype.getBattery = function(callback) {
-  this.log("Getting current battery...");
-  
-  request.get({
-	agentOptions: {
-      ca: fs.readFileSync(this.rootCACert)
-    },
-    url: this.url,
-    qs: { username: this.username, password: this.password, lockid: this.lockID }
-  }, function(err, response, body) {
-    
-    if (!err && response.statusCode == 200) {
-      var json = JSON.parse(body);
-      var batt = json.battery;
-      this.log("Lock battery is %s", batt);
-      callback(null, batt); // success
-    }
-    else {
-      this.log("Error getting battery (status code %s): %s", response.statusCode, err);
-      callback(err);
-    }
-  }.bind(this));
+    this.log("Getting current battery...");
+
+    request.get({
+        url: this.url,
+        qs: { username: this.username, password: this.password, lockid: this.lockID }
+    }, function(err, response, body) {
+
+        if (!err && response.statusCode == 200) {
+            var json = JSON.parse(body);
+            var batt = json.battery;
+            this.log("Lock battery is %s", batt);
+            callback(null, batt); // success
+        }
+        else {
+            this.log("Error getting battery (status code %s): %s", response.statusCode, err);
+            callback(err);
+        }
+    }.bind(this));
 }
 
 LockAccessory.prototype.getCharging = function(callback) {
-  callback(null, Characteristic.ChargingState.NOT_CHARGING);
+    callback(null, Characteristic.ChargingState.NOT_CHARGING);
 }
 
 LockAccessory.prototype.getLowBatt = function(callback) {
-  this.log("Getting current battery...");
-  
-  request.get({
-	agentOptions: {
-      ca: fs.readFileSync(this.rootCACert)
-    },
-    url: this.url,
-    qs: { username: this.username, password: this.password, lockid: this.lockID }
-  }, function(err, response, body) {
-    
-    if (!err && response.statusCode == 200) {
-      var json = JSON.parse(body);
-      var batt = json.battery;
-      this.log("Lock battery is %s", batt);
-	  var low = (batt > 20) ? Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL : Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW;
-      callback(null, low); // success
-    }
-    else {
-      this.log("Error getting battery (status code %s): %s", response.statusCode, err);
-      callback(err);
-    }
-  }.bind(this));
+    this.log("Getting current battery...");
+
+    request.get({
+        url: this.url,
+        qs: { username: this.username, password: this.password, lockid: this.lockID }
+    }, function(err, response, body) {
+
+        if (!err && response.statusCode == 200) {
+            var json = JSON.parse(body);
+            var batt = json.battery;
+            this.log("Lock battery is %s", batt);
+            var low = (batt > 20) ? Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL : Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW;
+            callback(null, low); // success
+        }
+        else {
+            this.log("Error getting battery (status code %s): %s", response.statusCode, err);
+            callback(err);
+        }
+    }.bind(this));
 }
 
 LockAccessory.prototype.setState = function(state, callback) {
-  var lockState = (state == Characteristic.LockTargetState.SECURED) ? "locked" : "unlocked";
+    var lockState = (state == Characteristic.LockTargetState.SECURED) ? "locked" : "unlocked";
 
-  this.log("Set state to %s", lockState);
+    this.log("Set state to %s", lockState);
 
-  request.post({
-	agentOptions: {
-      ca: fs.readFileSync(this.rootCACert)
-    },
-    url: this.url,
-    form: { username: this.username, password: this.password, lockid: this.lockID, state: lockState }
-  }, function(err, response, body) {
+    request.post({
+        url: this.url,
+        form: { username: this.username, password: this.password, lockid: this.lockID, state: lockState }
+    }, function(err, response, body) {
 
-    if (!err && response.statusCode == 200) {
-      this.log("State change complete.");
+        if (!err && response.statusCode == 200) {
+            this.log("State change complete.");
 
-      // we succeeded, so update the "current" state as well
-      var currentState = (state == Characteristic.LockTargetState.SECURED) ?
-        Characteristic.LockCurrentState.SECURED : Characteristic.LockCurrentState.UNSECURED;
-      
-      this.lockservice
-        .setCharacteristic(Characteristic.LockCurrentState, currentState);
+            // we succeeded, so update the "current" state as well
+            var currentState = (state == Characteristic.LockTargetState.SECURED) ?
+                Characteristic.LockCurrentState.SECURED : Characteristic.LockCurrentState.UNSECURED;
 
-      var json = JSON.parse(body);
-      var batt = json.battery;
+            this.lockservice
+                .setCharacteristic(Characteristic.LockCurrentState, currentState);
 
-      this.battservice
-        .setCharacteristic(Characteristic.BatteryLevel, batt);
+            var json = JSON.parse(body);
+            var batt = json.battery;
 
-      callback(null); // success
-    }
-    else {
-      this.log("Error '%s' setting lock state. Response: %s", err, body);
-      callback(err || new Error("Error setting lock state."));
-    }
-  }.bind(this));
+            this.battservice
+                .setCharacteristic(Characteristic.BatteryLevel, batt);
+
+            callback(null); // success
+        }
+        else {
+            this.log("Error '%s' setting lock state. Response: %s", err, body);
+            callback(err || new Error("Error setting lock state."));
+        }
+    }.bind(this));
 },
 
-LockAccessory.prototype.getServices = function() {
-  return [this.lockservice, this.battservice];
-}
+    LockAccessory.prototype.getServices = function() {
+        return [this.lockservice, this.battservice];
+    }
