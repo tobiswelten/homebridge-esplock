@@ -1,11 +1,11 @@
-# Esplock Plugin
+# EspLock Plugin
 
 Example config.json:
 
     {
       "accessories": [
         {
-            "accessory": "Esplock",
+            "accessory": "EspLock",
             "name": "Front Door",
             "url": "your-custom-or-homegrown-service-url",
 			"lock-id": "1",

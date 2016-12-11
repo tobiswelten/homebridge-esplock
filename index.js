@@ -5,7 +5,7 @@ module.exports = function(homebridge) {
     Service = homebridge.hap.Service;
     Characteristic = homebridge.hap.Characteristic;
 
-    homebridge.registerAccessory("homebridge-esplock", "Esplock", LockAccessory);
+    homebridge.registerAccessory("homebridge-esplock", "EspLock", LockAccessory);
 }
 
 function LockAccessory(log, config) {
@@ -139,11 +139,14 @@ LockAccessory.prototype.setState = function(state, callback) {
                 .setCharacteristic(Characteristic.BatteryLevel, batt);
 
             callback(null); // success
+
+            var self = this;
             setTimeout(function() {
-                currentState = Characteristic.LockCurrentState.SECURED;
-                this.lockservice
-                    .setCharacteristic(Characteristic.LockCurrentState, currentState);
-            }, 4000);
+                if (currentState == Characteristic.LockTargetState.UNSECURED) { 
+                    self.lockservice
+                        .setCharacteristic(Characteristic.LockTargetState, Characteristic.LockTargetState.SECURED);
+                }
+            }, 5000);
         }
         else {
             this.log("Error '%s' setting lock state. Response: %s", err, body);
