@@ -1,5 +1,4 @@
 var request = require("request");
-var fs = require("fs");
 var Service, Characteristic;
 
 module.exports = function(homebridge) {
@@ -140,6 +139,11 @@ LockAccessory.prototype.setState = function(state, callback) {
                 .setCharacteristic(Characteristic.BatteryLevel, batt);
 
             callback(null); // success
+            setTimeout(function() {
+                currentState = Characteristic.LockCurrentState.SECURED;
+                this.lockservice
+                    .setCharacteristic(Characteristic.LockCurrentState, currentState);
+            }, 4000);
         }
         else {
             this.log("Error '%s' setting lock state. Response: %s", err, body);
@@ -148,6 +152,6 @@ LockAccessory.prototype.setState = function(state, callback) {
     }.bind(this));
 },
 
-    LockAccessory.prototype.getServices = function() {
-        return [this.lockservice, this.battservice];
-    }
+LockAccessory.prototype.getServices = function() {
+    return [this.lockservice, this.battservice];
+}
