@@ -57,9 +57,7 @@ LockAccessory.prototype.getState = function(callback) {
             var locked = state == "locked";
             callback(null, locked); // success
         } else {
-            if (response.hasOwnProperty("statusCode")) {
-                this.log("Error getting state (status code %s): %s", response.statusCode, err);
-            }
+            //this.log("Error getting state (status code %s): %s", response.statusCode, err);
             callback(err);
         }
     }.bind(this));
