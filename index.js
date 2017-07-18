@@ -50,16 +50,14 @@ LockAccessory.prototype.getState = function(callback) {
         url: this.url,
         qs: { username: this.username, password: this.password, lockid: this.lockID }
     }, function(err, response, body) {
-
         if (!err && response.statusCode == 200) {
             var json = JSON.parse(body);
             var state = json.state; // "locked" or "unlocked"
             this.log("Lock state is %s", state);
-            var locked = state == "locked"
-                callback(null, locked); // success
-        }
-        else {
-            if (typeof response.statusCode != undefined) {
+            var locked = state == "locked";
+            callback(null, locked); // success
+        } else {
+            if (response.hasOwnProperty("statusCode")) {
                 this.log("Error getting state (status code %s): %s", response.statusCode, err);
             }
             callback(err);
