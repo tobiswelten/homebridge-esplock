@@ -59,7 +59,9 @@ LockAccessory.prototype.getState = function(callback) {
                 callback(null, locked); // success
         }
         else {
-            this.log("Error getting state (status code %s): %s", response.statusCode, err);
+            if (typeof response.statusCode != undefined) {
+                this.log("Error getting state (status code %s): %s", response.statusCode, err);
+            }
             callback(err);
         }
     }.bind(this));
