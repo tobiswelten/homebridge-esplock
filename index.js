@@ -57,7 +57,9 @@ LockAccessory.prototype.getState = function(callback) {
             var locked = state == "locked";
             callback(null, locked); // success
         } else {
-            //this.log("Error getting state (status code %s): %s", response.statusCode, err);
+            if (response && response.statusCode) {
+                this.log("Error getting state (status code %s): %s", response.statusCode, err);
+            }
             callback(err);
         }
     }.bind(this));
@@ -78,7 +80,9 @@ LockAccessory.prototype.getBattery = function(callback) {
             callback(null, batt); // success
         }
         else {
-            this.log("Error getting battery (status code %s): %s", response.statusCode, err);
+            if (response && response.statusCode) {
+                this.log("Error getting battery (status code %s): %s", response.statusCode, err);
+            }
             callback(err);
         }
     }.bind(this));
@@ -104,7 +108,9 @@ LockAccessory.prototype.getLowBatt = function(callback) {
             callback(null, low); // success
         }
         else {
-            this.log("Error getting battery (status code %s): %s", response.statusCode, err);
+            if (response && response.statusCode) {
+                this.log("Error getting battery (status code %s): %s", response.statusCode, err);
+            }
             callback(err);
         }
     }.bind(this));

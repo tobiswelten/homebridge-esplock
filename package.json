@@ -1,6 +1,6 @@
 {
     "name": "homebridge-esplock",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "HTTP controlled ESP8266 lock accessory plugin for Homebridge",
     "author": {
         "name": "yancan#aprbrother.com"
