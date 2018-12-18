@@ -8,9 +8,6 @@ Example config.json:
             "accessory": "EspLock",
             "name": "Front Door",
             "url": "your-custom-or-homegrown-service-url",
-			"lock-id": "1",
-            "username" : "your-username",
-			"password" : "your-password"
         }
       ]
     }
