@@ -1,4 +1,4 @@
-# EspLock Plugin
+# httplocklight Plugin
 
 Example config.json:
 
