@@ -12,9 +12,9 @@ function LockAccessory(log, config) {
     this.log = log;
     this.name = config["name"];
     this.url = config["url"];
-    this.lockID = config["lock-id"];
-    this.username = config["username"];
-    this.password = config["password"];
+    //this.lockID = config["lock-id"];
+    //this.username = config["username"];
+    //this.password = config["password"];
 
     this.lockservice = new Service.LockMechanism(this.name);
 
