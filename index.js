@@ -48,7 +48,7 @@ LockAccessory.prototype.getState = function(callback) {
 
     request.get({
         url: this.url,
-        qs: { username: this.username, password: this.password, lockid: this.lockID }
+        //qs: { username: this.username, password: this.password, lockid: this.lockID }
     }, function(err, response, body) {
         if (!err && response.statusCode == 200) {
             var json = JSON.parse(body);
@@ -70,7 +70,7 @@ LockAccessory.prototype.getBattery = function(callback) {
 
     request.get({
         url: this.url,
-        qs: { username: this.username, password: this.password, lockid: this.lockID }
+        //qs: { username: this.username, password: this.password, lockid: this.lockID }
     }, function(err, response, body) {
 
         if (!err && response.statusCode == 200) {
@@ -97,7 +97,7 @@ LockAccessory.prototype.getLowBatt = function(callback) {
 
     request.get({
         url: this.url,
-        qs: { username: this.username, password: this.password, lockid: this.lockID }
+        //qs: { username: this.username, password: this.password, lockid: this.lockID }
     }, function(err, response, body) {
 
         if (!err && response.statusCode == 200) {
@@ -123,7 +123,7 @@ LockAccessory.prototype.setState = function(state, callback) {
 
     request.post({
         url: this.url,
-        form: { username: this.username, password: this.password, lockid: this.lockID, state: lockState }
+        //form: { username: this.username, password: this.password, lockid: this.lockID, state: lockState }
     }, function(err, response, body) {
 
         if (!err && response.statusCode == 200) {
